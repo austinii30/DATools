@@ -1,0 +1,18 @@
+Package: DATools
+Type: Package
+Title: R6 Utilities and functions for data analysis
+Version: 0.0.1
+Imports:
+    R6,
+    git2r,
+    renv,
+    yaml,
+    devtools
+Description: Some handy tools for data analysis. Uses R6 classes to avoid a bunch of explicit variables and arguments passing.
+License: MIT
+Authors@R: 
+    person("Chih-Tse", "Liu", email="austinisaboy@gmail.com", role=c("aut", "cre"))
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
