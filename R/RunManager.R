@@ -111,7 +111,11 @@ RunManager <- R6::R6Class(
     
       # git commit ID
       repohead <- git2r::repository_head(repo)
-      private$git_commit <- git2r::sha(repohead)
+      if (is.null(repohead)) {
+        private$git_commit <- "No commits yet"
+      } else { 
+        private$git_commit <- git2r::sha(repohead)
+      }
     
       # git working tree dirty status
       status <- git2r::status(repo)
@@ -459,6 +463,10 @@ RunManager <- R6::R6Class(
           user = private$runtime["user.self"],
           system = private$runtime["sys.self"],
           elapsed = private$runtime["elapsed"]
+        ),
+        git_status = list(
+          commit = private$git_commit,
+          dirty = private$git_dirty
         ),
         logs = as.list(private$log_messages),
         warnings = as.list(private$warnings_log),
