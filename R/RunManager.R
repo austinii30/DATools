@@ -28,8 +28,8 @@ RunManager <- R6::R6Class(
       private$s.exe_dir <- private$makedir(root, "script", "exe")
 
       private$cli_flags <- list(
-        `--runname`=NULL, 
-        `--config`=NULL
+        `--runname` = character(0), 
+        `--config` = character(0)
       )
 
       self$logmsg("RunManager Initialized.")
@@ -133,7 +133,7 @@ RunManager <- R6::R6Class(
     
       idx <- which(args == flag)
     
-      if (length(idx) == 0) { return(NULL) }
+      if (length(idx) == 0) { return(character(0)) }
     
       values <- args[(idx + 1):length(args)]
     
@@ -148,7 +148,7 @@ RunManager <- R6::R6Class(
 
     validate_input = function (valid_args, args_input) {
       # no restriction on input
-      if (is.null(valid_args)) { 
+      if (length(valid_args) == 0) { 
           return(args_input) 
       }
       if ("all" %in% args_input) {
@@ -323,10 +323,13 @@ RunManager <- R6::R6Class(
       # Load and archive config
       # -----------------------------
       config_file <- private$cli_args[["--config"]]
-      if (!is.null(config_file)) {
+      if (length(config_file) == 1) {
         config_path <- self$c_path(config_file)
+      } else if (length(config_file > 1)) {
+        stop("Multiple config files provided.")
       } else { 
         config_path <- self$default_config()
+        self$logmsg("No config file provided. Using default config.")
       }
       private$config <- yaml::read_yaml(config_path)
       file.copy(
@@ -456,10 +459,11 @@ RunManager <- R6::R6Class(
         res <- vector("list", length(flags))
         names(res) <- flags
         for (i in seq_along(flags)) { 
-             parsed_args <- self$parse_cliarg(args, flags[[i]]) 
-             res[[i]] <- self$validate_input(
-                private$cli_flags[[flags[[i]]]], parsed_args
-             )
+            f <- flags[i]
+            parsed_args <- self$parse_cliarg(args, f) 
+            res[[f]] <- self$validate_input(
+               private$cli_flags[[f]], parsed_args
+            )
         }
 
         return(res)
