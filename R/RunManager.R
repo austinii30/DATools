@@ -170,19 +170,19 @@ RunManager <- R6::R6Class(
         return(default)
     },
 
-    source_scripts = function (scriptpath) {
+    normalize_scripts = function () {
 
-        scripts <- scriptpath[!dir.exists(scriptpath)]
+        scripts <- private$scrpaths[!dir.exists(private$scrpaths)]
         if (length(scripts) != 0) {
-          scripts <- paste0(self$s.R_path(), "/", scripts)
+          scripts <- file.path(self$s.R_path(), scripts)
         }
-        scriptpath[!dir.exists(scriptpath)] <- scripts
+        private$scrpaths[!dir.exists(private$scrpaths)] <- scripts
 
-        if (!all(file.exists(scriptpath))) {
-            stop("Script file/directory does not exist.")
+        if (!all(file.exists(private$scrpaths))) {
+            stop(paste0("Script file/directory does not exist."))
         }
 
-        scriptdirs <- setdiff(scriptpath, scripts)
+        scriptdirs <- setdiff(private$scrpaths, scripts)
         # if any script dir does not exist
         if (!all(dir.exists(scriptdirs))) {
             stop("Script directory does not exist.")
@@ -197,11 +197,8 @@ RunManager <- R6::R6Class(
           )
           scripts <- c(scripts, files)
         }
-
-        for (scr in unique(scripts)) {
-            suppressPackageStartupMessages(source(scr))
-            self$logmsg(paste0("Sourced \'", scr, "\'." ))
-        }
+        
+        private$scrpaths <- unique(normalizePath(scripts))
 
     },
 
@@ -226,6 +223,27 @@ RunManager <- R6::R6Class(
         }
         cat("========================================\n\n", file = con)
 
+        # --- load libraries ----
+        cat("----- load libraries -----\n\n", file = con)
+        for (pkg in private$libraries) {
+            cat("Loading package \'", pkg, "\'\n", sep = "", file = con)
+            capture.output(
+                library(pkg, character.only = TRUE), file = con
+            )
+            self$logmsg(paste0("Imported \'", pkg, "\'." ))
+        }
+        cat("\n\n", file = con)
+
+        # ---- source scripts ----
+        cat("----- source scripts -----\n\n", file = con)
+        self$normalize_scripts()
+        for (scr in private$scrpaths) {
+            cat("Sourcing script \'", scr, "\'\n", sep = "", file = con)
+            capture.output(source(scr), file = con)
+            self$logmsg(paste0("Sourced \'", scr, "\'." ))
+        }
+        cat("\n\n", file = con)
+
         # ---- sessionInfo() ----
         cat("----- sessionInfo() -----\n\n", file = con)
         capture.output(sessionInfo(), file = con)
@@ -249,7 +267,7 @@ RunManager <- R6::R6Class(
 
         # ---- R Environment Snapshot ----
         cat("----- R Environment Snapshot -----\n\n", file = con)
-        capture.output(self$snapshot_env(), file=con)
+        capture.output(self$snapshot_env(), file = con)
         cat("\n\n", file = con)
 
         self$logmsg("System execution information logged.")
@@ -317,23 +335,10 @@ RunManager <- R6::R6Class(
       self$logmsg(paste0("config file \'", config_path, "\' loaded."))
 
       # -----------------------------
-      # Load libraries
+      # Log System info (load libs, source scripts)
       # -----------------------------
-      for (pkg in libraries) {
-          suppressPackageStartupMessages(
-            library(pkg, character.only = TRUE)
-          )
-          self$logmsg(paste0("Imported \'", pkg, "\'." ))
-      }
-
-      # -----------------------------
-      # Source scripts
-      # -----------------------------
-      self$source_scripts(scriptpath)
-
-      # -----------------------------
-      # System info logging
-      # -----------------------------
+      private$libraries <- libraries
+      private$scrpaths <- scriptpath
       self$log_system_info()
     },
 
@@ -433,6 +438,12 @@ RunManager <- R6::R6Class(
     # -----------------------------
     snapshot = NULL,
 
+    # -----------------------------
+    # R environment snapshot
+    # -----------------------------
+    libraries = NULL,
+    scrpaths = NULL,
+
 
     makedir = function(...) {
         dir <- file.path(...)
@@ -464,6 +475,8 @@ RunManager <- R6::R6Class(
           system = private$runtime["sys.self"],
           elapsed = private$runtime["elapsed"]
         ),
+        package_imports = as.list(private$libraries),
+        sourced_scripts = as.list(private$scrpaths),
         git_status = list(
           commit = private$git_commit,
           dirty = private$git_dirty
