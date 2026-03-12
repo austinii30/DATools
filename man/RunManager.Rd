@@ -26,7 +26,7 @@ Manages project IO paths and execution lifecycle.
 \item \href{#method-RunManager-parse_cliarg}{\code{RunManager$parse_cliarg()}}
 \item \href{#method-RunManager-validate_input}{\code{RunManager$validate_input()}}
 \item \href{#method-RunManager-default_config}{\code{RunManager$default_config()}}
-\item \href{#method-RunManager-source_scripts}{\code{RunManager$source_scripts()}}
+\item \href{#method-RunManager-normalize_scripts}{\code{RunManager$normalize_scripts()}}
 \item \href{#method-RunManager-logmsg}{\code{RunManager$logmsg()}}
 \item \href{#method-RunManager-log_system_info}{\code{RunManager$log_system_info()}}
 \item \href{#method-RunManager-get_config}{\code{RunManager$get_config()}}
@@ -190,11 +190,11 @@ Manages project IO paths and execution lifecycle.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-RunManager-source_scripts"></a>}}
-\if{latex}{\out{\hypertarget{method-RunManager-source_scripts}{}}}
-\subsection{Method \code{source_scripts()}}{
+\if{html}{\out{<a id="method-RunManager-normalize_scripts"></a>}}
+\if{latex}{\out{\hypertarget{method-RunManager-normalize_scripts}{}}}
+\subsection{Method \code{normalize_scripts()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{RunManager$source_scripts(scriptpath)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{RunManager$normalize_scripts()}\if{html}{\out{</div>}}
 }
 
 }
