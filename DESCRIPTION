@@ -1,7 +1,7 @@
 Package: DATools
 Type: Package
 Title: R6 Utilities and functions for data analysis
-Version: 0.0.2
+Version: 0.0.3
 Imports:
     R6,
     git2r,

@@ -4,7 +4,7 @@
 #'
 #' @export
 RunManager <- R6::R6Class(
-  "RunManager",
+  classname = "RunManager",
 
   public = list(
 
