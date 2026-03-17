@@ -80,17 +80,17 @@ RunManager <- R6::R6Class(
     },
 
     actrun_path = function(file=NULL) {
-      if(is.null(private$active_run_dir)) { stop("Run not initialized.") }
+      if(is.null(private$actrun_dir)) { stop("Run not initialized.") }
 
-      if (is.null(file)) { return( private$active_run_dir ) } 
-      else { return( file.path(private$active_run_dir, file) ) }
+      if (is.null(file)) { return( private$actrun_dir ) } 
+      else { return( file.path(private$actrun_dir, file) ) }
     },
 
     actruninfo_path = function(file=NULL) {
-      if(is.null(private$active_run_info_dir)) { stop("Run not initialized.") }
+      if(is.null(private$actrun_info_dir)) { stop("Run not initialized.") }
 
-      if (is.null(file)) { return( private$active_run_info_dir ) } 
-      else { return( file.path(private$active_run_info_dir, file) ) }
+      if (is.null(file)) { return( private$actrun_info_dir ) } 
+      else { return( file.path(private$actrun_info_dir, file) ) }
     },
 
     consolelog_path = function (dir, file) {
@@ -218,7 +218,7 @@ RunManager <- R6::R6Class(
         cat("========================================\n", file = con)
         cat("R SYSTEM REPORT\n", file = con)
         cat("Generated at:", format(Sys.time()), "\n", file = con)
-        if (!is.null(private$runname)) {  
+        if (length(private$runname) != 0) {  
             cat("Run Name:", private$runname, "\n", file = con) 
         }
         cat("========================================\n\n", file = con)
@@ -312,11 +312,11 @@ RunManager <- R6::R6Class(
       # -----------------------------
       timestamp <- format(private$start_time, "%Y-%m-%d_%H-%M-%S")
       private$runname <- private$cli_args[["--runname"]]
-      if (!is.null(private$runname)) {
+      if (length(private$runname) != 0) {
           timestamp <- paste(timestamp, private$runname)
       }
-      private$active_run_dir <- private$makedir(self$o.runs_path(timestamp))
-      private$active_run_info_dir <- private$makedir(self$actrun_path("system"))
+      private$actrun_dir <- private$makedir(self$o.runs_path(timestamp))
+      private$actrun_info_dir <- private$makedir(self$actrun_path("system"))
       self$logmsg("Timestamp directory for current run created.")
 
       # -----------------------------
@@ -411,8 +411,8 @@ RunManager <- R6::R6Class(
     # -----------------------------
     # Timestamp directory for each run
     # -----------------------------
-    active_run_dir = NULL,
-    active_run_info_dir = NULL,
+    actrun_dir = NULL,
+    actrun_info_dir = NULL,
 
     # -----------------------------
     # Run state
