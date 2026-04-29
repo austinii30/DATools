@@ -122,12 +122,12 @@ RunManager <- R6::R6Class(
       private$git_dirty <- any(lengths(status) > 0)
     },
 
-    snapshot_env = function() {
-
-      private$snapshot <- self$actruninfo_path("renv.lock")
-      renv::snapshot(prompt = FALSE, lockfile=private$snapshot)
-
-    },
+    #snapshot_env = function() {
+#
+#      private$snapshot <- self$actruninfo_path("renv.lock")
+#      renv::snapshot(prompt = FALSE, lockfile=private$snapshot)
+#
+#    },
 
     parse_cliarg = function(args, flag) {
     
@@ -266,9 +266,9 @@ RunManager <- R6::R6Class(
         cat("\n\n", file = con)
 
         # ---- R Environment Snapshot ----
-        cat("----- R Environment Snapshot -----\n\n", file = con)
-        capture.output(self$snapshot_env(), file = con)
-        cat("\n\n", file = con)
+        #cat("----- R Environment Snapshot -----\n\n", file = con)
+        #capture.output(self$snapshot_env(), file = con)
+        #cat("\n\n", file = con)
 
         self$logmsg("System execution information logged.")
     },
