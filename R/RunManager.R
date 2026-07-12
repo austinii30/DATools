@@ -273,6 +273,10 @@ RunManager <- R6::R6Class(
         self$logmsg("System execution information logged.")
     },
 
+    read_config = function() {
+        private$config <- yaml::read_yaml(private$config_path)
+    },
+
     get_config = function(name=NULL) {
         if (is.null(name)) {
             return(private$config)
@@ -324,18 +328,18 @@ RunManager <- R6::R6Class(
       # -----------------------------
       config_file <- private$cli_args[["--config"]]
       if (length(config_file) == 1) {
-        config_path <- self$c_path(config_file)
+        private$config_path <- self$c_path(config_file)
       } else if (length(config_file > 1)) {
         stop("Multiple config files provided.")
       } else { 
-        config_path <- self$default_config()
+        private$config_path <- self$default_config()
         self$logmsg("No config file provided. Using default config.")
       }
-      private$config <- yaml::read_yaml(config_path)
+      self$read_config()
       file.copy(
-        config_path, self$actruninfo_path(paste0("config_", basename(config_path)))
+        private$config_path, self$actruninfo_path(paste0("config_", basename(private$config_path)))
       )
-      self$logmsg(paste0("config file \'", config_path, "\' loaded."))
+      self$logmsg(paste0("config file \'", private$config_path, "\' loaded."))
 
       # -----------------------------
       # Log System info (load libs, source scripts)
@@ -421,6 +425,7 @@ RunManager <- R6::R6Class(
     end_time = NULL,
     runtime = NULL,
 
+    config_path = NULL,
     config = NULL,
     cli_flags = NULL,
     cli_args = NULL,
