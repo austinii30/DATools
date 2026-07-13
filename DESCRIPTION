@@ -5,7 +5,6 @@ Version: 0.0.3
 Imports:
     R6,
     git2r,
-    renv,
     yaml,
     devtools
 Description: Some handy tools for data analysis. Uses R6 classes to avoid a bunch of explicit variables and arguments passing.
